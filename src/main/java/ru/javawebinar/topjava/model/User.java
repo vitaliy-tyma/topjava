@@ -39,12 +39,12 @@ public class User extends AbstractNamedEntity {
     @Email
     @NotBlank
     @SafeHtml(groups = {View.ValidatedRestUI.class})  // https://stackoverflow.com/questions/17480809
-    @Size(max = 80)
+    @Size(max = 100)
     private String email;
 
     @Column(name = "password", nullable = false)
     @NotBlank
-    @Size(min = 5, max = 32)
+    @Size(min = 5, max = 64)
     // https://stackoverflow.com/a/12505165/548473
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
