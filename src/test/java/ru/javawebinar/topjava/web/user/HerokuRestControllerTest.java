@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.javawebinar.topjava.Profiles.HEROKU;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
-import static ru.javawebinar.topjava.util.exception.ApplicationException.EXCEPTION_MODIFICATION_RESTRICTION;
+import static ru.javawebinar.topjava.util.exception.ModificationRestrictionException.EXCEPTION_MODIFICATION_RESTRICTION;
 
 @ActiveProfiles({HEROKU})
 public class HerokuRestControllerTest extends AbstractControllerTest {

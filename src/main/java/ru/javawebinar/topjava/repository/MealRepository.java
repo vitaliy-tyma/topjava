@@ -15,10 +15,10 @@ public interface MealRepository {
     // null if meal do not belong to userId
     Meal get(int id, int userId);
 
-    // ORDERED dateTime
+    // ORDERED dateTime desc
     List<Meal> getAll(int userId);
 
-    // ORDERED dateTime
+    // ORDERED dateTime desc
     List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId);
 
     default Meal getWithUser(int id, int userId) {

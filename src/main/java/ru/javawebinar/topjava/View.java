@@ -3,10 +3,9 @@ package ru.javawebinar.topjava;
 import javax.validation.groups.Default;
 
 public class View {
+    // Validate only form UI/REST
+    public interface Web extends Default {}
 
-    // https://narmo7.wordpress.com/2014/04/26/how-to-set-up-validation-group-in-springmvc/
-    // http://beanvalidation.org/proposals/BVAL-234/
-    public interface ValidatedRestUI extends Default {}
-
+    // Validate only when DB save/update
     public interface Persist extends Default {}
 }

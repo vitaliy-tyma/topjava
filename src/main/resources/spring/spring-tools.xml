@@ -9,13 +9,14 @@
          http://www.springframework.org/schema/cache/spring-cache.xsd">
 
     <!-- enables scanning for @Cacheable annotation -->
-    <cache:annotation-driven/>
+    <cache:annotation-driven cache-manager="ehCacheManager"/>
 
-    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
-        p:cacheManager-ref="ehcache"/>
-
-    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
-        p:configLocation="classpath:cache/ehcache.xml"
-        p:shared="true"/>
+    <!--https://imhoratiu.wordpress.com/2017/01/26/spring-4-with-ehcache-3-how-to/-->
+    <bean id="ehCacheManager" class="org.springframework.cache.jcache.JCacheCacheManager">
+        <property name="cacheManager">
+            <bean class="org.springframework.cache.jcache.JCacheManagerFactoryBean"
+                  p:cacheManagerUri="classpath:cache/ehcache.xml"/>
+        </property>
+    </bean>
 
 </beans>

@@ -21,7 +21,7 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(ApplicationException.class)
     public ModelAndView applicationErrorHandler(HttpServletRequest req, ApplicationException appEx) throws Exception {
-        return getView(req, appEx, appEx.getType(), messageUtil.getMessage(appEx.getMsgCode(), appEx.getArgs()));
+        return getView(req, appEx, appEx.getType(), messageUtil.getMessage(appEx));
     }
 
     @ExceptionHandler(Exception.class)

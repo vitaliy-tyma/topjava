@@ -39,8 +39,8 @@ public class Meal extends AbstractBaseEntity {
 
     @Column(name = "description", nullable = false)
     @NotBlank
-    @SafeHtml(groups = {View.ValidatedRestUI.class})
-    @Size(min = 2, max = 150)
+    @Size(min = 2, max = 120)
+    @SafeHtml(groups = {View.Web.class})
     private String description;
 
     @Column(name = "calories", nullable = false)
@@ -111,7 +111,7 @@ public class Meal extends AbstractBaseEntity {
     @Override
     public String toString() {
         return "Meal{" +
-                "id=" + getId() +
+                "id=" + id +
                 ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +

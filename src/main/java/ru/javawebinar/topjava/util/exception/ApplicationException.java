@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 
 public class ApplicationException extends RuntimeException {
-    public static final String EXCEPTION_MODIFICATION_RESTRICTION = "exception.user.modificationRestriction";
 
     private final ErrorType type;
     private final String msgCode;

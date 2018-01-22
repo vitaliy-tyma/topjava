@@ -1,13 +1,16 @@
 package ru.javawebinar.topjava;
 
-import ru.javawebinar.topjava.matcher.BeanMatcher;
+import org.springframework.test.web.servlet.ResultMatcher;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.util.Objects;
+import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
+import static ru.javawebinar.topjava.web.json.JsonUtil.writeIgnoreProps;
 
 public class UserTestData {
     public static final int USER_ID = START_SEQ;
@@ -16,18 +19,27 @@ public class UserTestData {
     public static final User USER = new User(USER_ID, "User", "user@yandex.ru", "password", 2005, Role.ROLE_USER);
     public static final User ADMIN = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", 1900, Role.ROLE_ADMIN, Role.ROLE_USER);
 
-    public static final BeanMatcher<User> MATCHER = BeanMatcher.of(User.class,
-            (expected, actual) -> expected == actual ||
-                    (Objects.equals(expected.getId(), actual.getId())
-                            && Objects.equals(expected.getName(), actual.getName())
-                            && Objects.equals(expected.getEmail(), actual.getEmail())
-                            && Objects.equals(expected.getCaloriesPerDay(), actual.getCaloriesPerDay())
-                            && Objects.equals(expected.isEnabled(), actual.isEnabled())
-                            && Objects.equals(expected.getRoles(), actual.getRoles())
-                    )
-    );
+    public static void assertMatch(User actual, User expected) {
+        assertThat(actual).isEqualToIgnoringGivenFields(expected, "registered", "meals", "password");
+    }
+
+    public static void assertMatch(Iterable<User> actual, User... expected) {
+        assertMatch(actual, Arrays.asList(expected));
+    }
+
+    public static void assertMatch(Iterable<User> actual, Iterable<User> expected) {
+        assertThat(actual).usingElementComparatorIgnoringFields("registered", "meals", "password").isEqualTo(expected);
+    }
+
+    public static ResultMatcher contentJson(User... expected) {
+        return content().json(writeIgnoreProps(Arrays.asList(expected), "registered", "password"));
+    }
+
+    public static ResultMatcher contentJson(User expected) {
+        return content().json(writeIgnoreProps(expected, "registered", "password"));
+    }
 
     public static String jsonWithPassword(User user, String passw) {
-        return JsonUtil.writeWithExtraProps(user, "password", passw);
+        return JsonUtil.writeAdditionProps(user, "password", passw);
     }
 }

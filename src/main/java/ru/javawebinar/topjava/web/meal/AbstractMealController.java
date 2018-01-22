@@ -25,50 +25,51 @@ public abstract class AbstractMealController {
 
     public Meal get(int id) {
         int userId = AuthorizedUser.id();
-        log.info("get meal {} for User {}", id, userId);
+        log.info("get meal {} for user {}", id, userId);
         return service.get(id, userId);
     }
 
     public void delete(int id) {
         int userId = AuthorizedUser.id();
-        log.info("delete meal {} for User {}", id, userId);
+        log.info("delete meal {} for user {}", id, userId);
         service.delete(id, userId);
     }
 
     public List<MealWithExceed> getAll() {
         int userId = AuthorizedUser.id();
-        log.info("getAll for User {}", userId);
+        log.info("getAll for user {}", userId);
         return MealsUtil.getWithExceeded(service.getAll(userId), AuthorizedUser.getCaloriesPerDay());
     }
 
     public Meal create(Meal meal) {
         int userId = AuthorizedUser.id();
         checkNew(meal);
-        log.info("create {} for User {}", meal, userId);
+        log.info("create {} for user {}", meal, userId);
         return service.create(meal, userId);
     }
 
     public void update(Meal meal, int id) {
         int userId = AuthorizedUser.id();
         assureIdConsistent(meal, id);
-        log.info("update {} for User {}", meal, userId);
+        log.info("update {} for user {}", meal, userId);
         service.update(meal, userId);
     }
 
     /**
      * <ol>Filter separately
-     *   <li>by date</li>
-     *   <li>by time for every date</li>
+     * <li>by date</li>
+     * <li>by time for every date</li>
      * </ol>
      */
     public List<MealWithExceed> getBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         int userId = AuthorizedUser.id();
-        log.info("getBetween dates({} - {}) time({} - {}) for User {}", startDate, endDate, startTime, endTime, userId);
+        log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
 
-        return MealsUtil.getFilteredWithExceeded(
-                service.getBetweenDates(
-                        startDate != null ? startDate : DateTimeUtil.MIN_DATE,
-                        endDate != null ? endDate : DateTimeUtil.MAX_DATE, userId),
+        List<Meal> mealsDateFiltered = service.getBetweenDates(
+                startDate != null ? startDate : DateTimeUtil.MIN_DATE,
+                endDate != null ? endDate : DateTimeUtil.MAX_DATE, userId);
+
+        return MealsUtil.getFilteredWithExceeded(mealsDateFiltered,
                 startTime != null ? startTime : LocalTime.MIN,
                 endTime != null ? endTime : LocalTime.MAX,
                 AuthorizedUser.getCaloriesPerDay()

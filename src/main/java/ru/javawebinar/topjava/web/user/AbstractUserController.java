@@ -4,19 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.exception.ApplicationException;
+import ru.javawebinar.topjava.util.exception.ModificationRestrictionException;
 
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
-import static ru.javawebinar.topjava.util.exception.ApplicationException.EXCEPTION_MODIFICATION_RESTRICTION;
 
 public abstract class AbstractUserController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -80,7 +78,7 @@ public abstract class AbstractUserController {
 
     private void checkModificationAllowed(int id) {
         if (modificationRestriction && id < AbstractBaseEntity.START_SEQ + 2) {
-            throw new ApplicationException(EXCEPTION_MODIFICATION_RESTRICTION, HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+            throw new ModificationRestrictionException();
         }
     }
 }

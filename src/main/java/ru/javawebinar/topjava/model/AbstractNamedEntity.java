@@ -13,9 +13,9 @@ import javax.validation.constraints.Size;
 public abstract class AbstractNamedEntity extends AbstractBaseEntity {
 
     @NotBlank
-    @Column(name = "name", nullable = false)
     @Size(min = 2, max = 100)
-    @SafeHtml(groups = {View.ValidatedRestUI.class})
+    @Column(name = "name", nullable = false)
+    @SafeHtml(groups = {View.Web.class})
     protected String name;
 
     public AbstractNamedEntity() {
@@ -36,6 +36,6 @@ public abstract class AbstractNamedEntity extends AbstractBaseEntity {
 
     @Override
     public String toString() {
-        return String.format("Entity %s (%s, '%s')", getClass().getName(), getId(), name);
+        return String.format("Entity %s (%s, '%s')", getClass().getName(), id, name);
     }
 }

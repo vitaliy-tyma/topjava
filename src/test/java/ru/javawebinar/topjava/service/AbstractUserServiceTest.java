@@ -4,12 +4,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -21,66 +21,69 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     protected UserService service;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @Before
     public void setUp() throws Exception {
-        service.evictCache();
+        cacheManager.getCache("users").clear();
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void create() throws Exception {
         User newUser = new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.ROLE_USER));
         User created = service.create(newUser);
         newUser.setId(created.getId());
-        MATCHER.assertListEquals(Arrays.asList(ADMIN, newUser, USER), service.getAll());
+        assertMatch(service.getAll(), ADMIN, newUser, USER);
     }
 
     @Test(expected = DataAccessException.class)
-    public void testDuplicateMailCreate() throws Exception {
+    public void duplicateMailCreate() throws Exception {
         service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", 2000, Role.ROLE_USER));
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void delete() throws Exception {
         service.delete(USER_ID);
-        MATCHER.assertListEquals(Collections.singletonList(ADMIN), service.getAll());
+        assertMatch(service.getAll(), ADMIN);
     }
 
     @Test(expected = NotFoundException.class)
-    public void testNotFoundDelete() throws Exception {
+    public void notFoundDelete() throws Exception {
         service.delete(1);
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void get() throws Exception {
         User user = service.get(ADMIN_ID);
-        MATCHER.assertEquals(ADMIN, user);
+        assertMatch(user, ADMIN);
     }
 
     @Test(expected = NotFoundException.class)
-    public void testGetNotFound() throws Exception {
+    public void getNotFound() throws Exception {
         service.get(1);
     }
 
     @Test
-    public void testGetByEmail() throws Exception {
+    public void getByEmail() throws Exception {
         User user = service.getByEmail("admin@gmail.com");
-        MATCHER.assertEquals(ADMIN, user);
+        assertMatch(user, ADMIN);
     }
 
     @Test
-    public void testGetAll() throws Exception {
-        List<User> all = service.getAll();
-        MATCHER.assertListEquals(Arrays.asList(ADMIN, USER), all);
-    }
-
-    @Test
-    public void testUpdate() throws Exception {
+    public void update() throws Exception {
         User updated = new User(USER);
         updated.setName("UpdatedName");
         updated.setCaloriesPerDay(330);
         updated.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
         service.update(updated);
-        MATCHER.assertEquals(updated, service.get(USER_ID));
+        assertMatch(service.get(USER_ID), updated);
+    }
+
+    @Test
+    public void getAll() throws Exception {
+        List<User> all = service.getAll();
+        assertMatch(all, ADMIN, USER);
     }
 
     @Test

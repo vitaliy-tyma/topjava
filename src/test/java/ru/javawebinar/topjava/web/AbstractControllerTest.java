@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,10 +42,13 @@ abstract public class AbstractControllerTest {
         CHARACTER_ENCODING_FILTER.setForceEncoding(true);
     }
 
+    protected MockMvc mockMvc;
+
+    @Autowired
+    private CacheManager cacheManager;
+
     @Autowired(required = false)
     private JpaUtil jpaUtil;
-
-    protected MockMvc mockMvc;
 
     @Autowired
     protected UserService userService;
@@ -66,14 +70,14 @@ abstract public class AbstractControllerTest {
 
     @Before
     public void setUp() {
-        userService.evictCache();
+        cacheManager.getCache("users").clear();
         if (jpaUtil != null) {
             jpaUtil.clear2ndLevelHibernateCache();
         }
     }
 
     protected String getMessage(String code) {
-        return messageUtil.getMessage(code, MessageUtil.RU_LOCALE);
+        return messageUtil.getMessage(code);
     }
 
     public ResultMatcher errorType(ErrorType type) {

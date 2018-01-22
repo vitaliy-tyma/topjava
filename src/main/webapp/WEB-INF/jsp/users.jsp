@@ -12,27 +12,27 @@
 
 <div class="jumbotron">
     <div class="container">
-            <h3><spring:message code="user.title"/></h3>
-            <br/>
-                <a class="btn btn-primary" onclick="add()">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    <spring:message code="common.add"/>
-                </a>
-                <table class="table table-striped display" id="datatable">
-                    <thead>
-                    <tr>
-                        <th><spring:message code="user.name"/></th>
-                        <th><spring:message code="user.email"/></th>
-                        <th><spring:message code="user.roles"/></th>
-                        <th><spring:message code="user.active"/></th>
-                        <th><spring:message code="user.registered"/></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
+        <h3><spring:message code="user.title"/></h3>
+        <br/>
+        <a class="btn btn-primary" onclick="add()">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <spring:message code="common.add"/>
+        </a>
+        <table class="table table-striped display" id="datatable">
+            <thead>
+            <tr>
+                <th><spring:message code="user.name"/></th>
+                <th><spring:message code="user.email"/></th>
+                <th><spring:message code="user.roles"/></th>
+                <th><spring:message code="user.active"/></th>
+                <th><spring:message code="user.registered"/></th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
 
 <div class="modal fade" id="editRow">
     <div class="modal-dialog">

@@ -49,14 +49,16 @@ public class JdbcUserRepositoryImpl implements UserRepository {
             user.setId(newKey.intValue());
             insertRoles(user);
         } else {
+            if (namedParameterJdbcTemplate.update(
+                    "UPDATE users SET name=:name, email=:email, password=:password, " +
+                            "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
+                return null;
+            }
             // Simplest implementation.
             // More complicated : get user roles from DB and compare them with user.roles (assume that roles are changed rarely).
             // If roles are changed, calculate difference in java and delete/insert them.
             deleteRoles(user);
             insertRoles(user);
-            namedParameterJdbcTemplate.update(
-                    "UPDATE users SET name=:name, email=:email, password=:password, " +
-                            "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource);
         }
         return user;
     }

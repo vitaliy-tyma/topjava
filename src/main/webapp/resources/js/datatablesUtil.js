@@ -1,9 +1,9 @@
 var form;
 
 function makeEditable() {
-    form = $("#detailsForm");
+    form = $('#detailsForm');
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
-        failNoty(event, jqXHR, options, jsExc);
+        failNoty(jqXHR);
     });
 
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
@@ -47,18 +47,17 @@ function updateRow(id) {
         $.each(data, function (key, value) {
             form.find("input[name='" + key + "']").val(value);
         });
-        $("#editRow").modal();
+        $('#editRow').modal();
     });
 }
 
 function deleteRow(id) {
     $.ajax({
         url: ajaxUrl + id,
-        type: "DELETE",
-        success: function () {
-            updateTable();
-            successNoty("common.deleted");
-        }
+        type: "DELETE"
+    }).done(function () {
+        updateTable();
+        successNoty("common.deleted");
     });
 }
 
@@ -70,12 +69,11 @@ function save() {
     $.ajax({
         type: "POST",
         url: ajaxUrl,
-        data: form.serialize(),
-        success: function () {
-            $("#editRow").modal("hide");
-            updateTable();
-            successNoty("common.saved");
-        }
+        data: form.serialize()
+    }).done(function () {
+        $("#editRow").modal("hide");
+        updateTable();
+        successNoty("common.saved");
     });
 }
 
@@ -92,14 +90,15 @@ function successNoty(key) {
     closeNoty();
     new Noty({
         text: "<span class='glyphicon glyphicon-ok'></span> &nbsp;" + i18n[key],
-        type: "success",
+        type: 'success',
         layout: "bottomRight",
         timeout: 1000
     }).show();
 }
 
-function failNoty(event, jqXHR, options, jsExc) {
+function failNoty(jqXHR) {
     closeNoty();
+    // https://stackoverflow.com/questions/48229776
     var errorInfo = JSON.parse(jqXHR.responseText);
     failedNote = new Noty({
         text: "<span class='glyphicon glyphicon-exclamation-sign'></span> &nbsp;" + errorInfo.typeMessage + "<br>" + errorInfo.details.join("<br>"),

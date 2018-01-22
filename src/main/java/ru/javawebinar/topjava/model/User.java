@@ -38,13 +38,13 @@ public class User extends AbstractNamedEntity {
     @Column(name = "email", nullable = false, unique = true)
     @Email
     @NotBlank
-    @SafeHtml(groups = {View.ValidatedRestUI.class})  // https://stackoverflow.com/questions/17480809
     @Size(max = 100)
+    @SafeHtml(groups = {View.Web.class})  // https://stackoverflow.com/questions/17480809
     private String email;
 
     @Column(name = "password", nullable = false)
     @NotBlank
-    @Size(min = 5, max = 64)
+    @Size(min = 5, max = 100)
     // https://stackoverflow.com/a/12505165/548473
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
@@ -140,18 +140,18 @@ public class User extends AbstractNamedEntity {
         return password;
     }
 
-    public List<Meal> getMeals() {
-        return meals;
-    }
-
     public void setRoles(Collection<Role> roles) {
         this.roles = CollectionUtils.isEmpty(roles) ? Collections.emptySet() : EnumSet.copyOf(roles);
+    }
+
+    public List<Meal> getMeals() {
+        return meals;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + getId() +
+                "id=" + id +
                 ", email=" + email +
                 ", name=" + name +
                 ", enabled=" + enabled +

@@ -34,7 +34,7 @@ public class MealAjaxController extends AbstractMealController {
     }
 
     @PostMapping
-    public void createOrUpdate(@Validated(View.ValidatedRestUI.class) Meal meal) {
+    public void createOrUpdate(@Validated(View.Web.class) Meal meal) {
         if (meal.isNew()) {
             super.create(meal);
         } else {

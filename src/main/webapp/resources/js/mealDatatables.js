@@ -5,9 +5,8 @@ function updateTable() {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "filter",
-        data: $("#filter").serialize(),
-        success: updateTableByData
-    });
+        data: $("#filter").serialize()
+    }).done(updateTableByData);
 }
 
 function clearFilter() {
@@ -21,7 +20,6 @@ $.ajaxSetup({
         "text json": function (stringData) {
             var json = JSON.parse(stringData);
             $(json).each(function () {
-                // console.log(this);
                 this.dateTime = this.dateTime.replace('T', ' ').substr(0, 16);
             });
             return json;

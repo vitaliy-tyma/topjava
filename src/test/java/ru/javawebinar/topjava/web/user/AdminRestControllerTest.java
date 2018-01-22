@@ -12,7 +12,6 @@ import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -35,7 +34,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER.contentMatcher(ADMIN));
+                .andExpect(contentJson(ADMIN));
     }
 
     @Test
@@ -52,7 +51,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER.contentMatcher(ADMIN));
+                .andExpect(contentJson(ADMIN));
     }
 
     @Test
@@ -60,8 +59,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(delete(REST_URL + USER_ID)
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
-                .andExpect(status().isOk());
-        MATCHER.assertListEquals(Collections.singletonList(ADMIN), userService.getAll());
+                .andExpect(status().isNoContent());
+        assertMatch(userService.getAll(), ADMIN);
     }
 
     @Test
@@ -86,9 +85,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-//    https://stackoverflow.com/a/46415060/548473
-//    @Transactional(propagation = Propagation.NEVER)
-//    @Commit
     public void testUpdate() throws Exception {
         User updated = new User(USER);
         updated.setName("UpdatedName");
@@ -96,26 +92,26 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
-//                .content(JsonUtil.writeValue(updated)))
-                .content(jsonWithPassword(updated, "password")))
+                .content(jsonWithPassword(updated, USER.getPassword())))
                 .andExpect(status().isOk());
 
-        MATCHER.assertEquals(updated, userService.get(USER_ID));
+        assertMatch(userService.get(USER_ID), updated);
     }
 
     @Test
     public void testCreate() throws Exception {
-        User newUser = new User(null, "New", "new@gmail.com", "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+        User expected = new User(null, "New", "new@gmail.com", "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
         ResultActions action = mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
-                .content(jsonWithPassword(newUser, "newPass"))).andExpect(status().isCreated());
+                .content(jsonWithPassword(expected, "newPass")))
+                .andExpect(status().isCreated());
 
-        User returned = MATCHER.fromJsonAction(action);
-        newUser.setId(returned.getId());
+        User returned = TestUtil.readFromJson(action, User.class);
+        expected.setId(returned.getId());
 
-        MATCHER.assertEquals(newUser, returned);
-        MATCHER.assertListEquals(Arrays.asList(ADMIN, newUser, USER), userService.getAll());
+        assertMatch(returned, expected);
+        assertMatch(userService.getAll(), ADMIN, expected, USER);
     }
 
     @Test
@@ -124,7 +120,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER.contentListMatcher(ADMIN, USER)));
+                .andExpect(contentJson(ADMIN, USER)));
     }
 
     @Test
@@ -175,7 +171,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
-                .content(jsonWithPassword(expected,"newPass")))
+                .content(jsonWithPassword(expected, "newPass")))
                 .andExpect(status().isConflict())
                 .andExpect(errorType(ErrorType.DATA_ERROR))
                 .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_EMAIL));
