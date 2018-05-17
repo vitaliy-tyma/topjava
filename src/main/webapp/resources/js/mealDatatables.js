@@ -57,7 +57,7 @@ $(function () {
             ]
         ],
         "createdRow": function (row, data, dataIndex) {
-            $(row).addClass(data.exceed ? 'exceeded' : 'normal');
+            $(row).attr("data-mealExceed", data.exceed);
         }
     }));
 

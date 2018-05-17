@@ -35,7 +35,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetUnauth() throws Exception {
+    public void testGetUnAuth() throws Exception {
         mockMvc.perform(get(REST_URL))
                 .andExpect(status().isUnauthorized());
     }
@@ -83,7 +83,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER))
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.DATA_ERROR))
+                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
                 .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_EMAIL))
                 .andDo(print());
     }

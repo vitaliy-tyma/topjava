@@ -13,7 +13,7 @@ function enable(chkbox, id) {
         type: "POST",
         data: "enabled=" + enabled
     }).done(function () {
-        chkbox.closest("tr").toggleClass("disabled");
+        chkbox.closest("tr").attr("data-userEnabled", enabled);
         successNoty(enabled ? "common.enabled" : "common.disabled");
     }).fail(function () {
         $(chkbox).prop("checked", !enabled);
@@ -76,7 +76,7 @@ $(function () {
         ],
         "createdRow": function (row, data, dataIndex) {
             if (!data.enabled) {
-                $(row).addClass("disabled");
+                $(row).attr("data-userEnabled", false);
             }
         }
     }));

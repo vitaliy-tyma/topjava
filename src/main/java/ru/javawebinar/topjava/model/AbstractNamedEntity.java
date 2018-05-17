@@ -18,7 +18,7 @@ public abstract class AbstractNamedEntity extends AbstractBaseEntity {
     @SafeHtml(groups = {View.Web.class})
     protected String name;
 
-    public AbstractNamedEntity() {
+    protected AbstractNamedEntity() {
     }
 
     protected AbstractNamedEntity(Integer id, String name) {

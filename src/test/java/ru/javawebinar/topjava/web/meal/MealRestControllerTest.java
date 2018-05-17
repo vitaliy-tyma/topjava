@@ -185,7 +185,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.DATA_ERROR))
+                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
                 .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_DATETIME));
     }
 
@@ -199,7 +199,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.DATA_ERROR))
+                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
                 .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_DATETIME));
     }
 }

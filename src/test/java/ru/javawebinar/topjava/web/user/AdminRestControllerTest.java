@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
 import static ru.javawebinar.topjava.web.ExceptionInfoHandler.EXCEPTION_DUPLICATE_EMAIL;
@@ -72,7 +73,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetUnauth() throws Exception {
+    public void testGetUnAuth() throws Exception {
         mockMvc.perform(get(REST_URL))
                 .andExpect(status().isUnauthorized());
     }
@@ -107,7 +108,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .content(jsonWithPassword(expected, "newPass")))
                 .andExpect(status().isCreated());
 
-        User returned = TestUtil.readFromJson(action, User.class);
+        User returned = readFromJson(action, User.class);
         expected.setId(returned.getId());
 
         assertMatch(returned, expected);
@@ -159,7 +160,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN))
                 .content(jsonWithPassword(updated, "password")))
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.DATA_ERROR))
+                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
                 .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_EMAIL))
                 .andDo(print());
     }
@@ -173,7 +174,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN))
                 .content(jsonWithPassword(expected, "newPass")))
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.DATA_ERROR))
+                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
                 .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_EMAIL));
 
     }
