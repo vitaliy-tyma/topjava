@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col-5 offset-3">
                 <h3>${userTo.name} <spring:message code="${register ? 'app.register' : 'app.profile'}"/></h3>
-                <form:form modelAttribute="userTo" class="form-horizontal" method="post" action="${register ? 'register' : 'profile'}"
+                <form:form class="form-group" modelAttribute="userTo" method="post" action="${register ? 'register' : 'profile'}"
                            charset="utf-8" accept-charset="UTF-8">
 
                     <topjava:inputField labelCode="user.name" name="name"/>
@@ -24,6 +24,10 @@
                     <topjava:inputField labelCode="user.caloriesPerDay" name="caloriesPerDay" inputType="number"/>
 
                     <div class="text-right">
+                        <a class="btn btn-secondary" onclick="window.history.back()">
+                            <span class="fa fa-close"></span>
+                            <spring:message code="common.cancel"/>
+                        </a>
                         <button type="submit" class="btn btn-primary">
                             <span class="fa fa-check"></span>
                             <spring:message code="common.save"/>

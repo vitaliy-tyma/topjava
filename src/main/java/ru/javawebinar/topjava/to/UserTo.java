@@ -24,7 +24,7 @@ public class UserTo extends BaseTo implements Serializable {
     @SafeHtml // https://stackoverflow.com/questions/17480809
     private String email;
 
-    @Size(min = 5, max = 32, message = "length must between 5 and 32 characters")
+    @Size(min = 5, max = 32)
     private String password;
 
     @Range(min = 10, max = 10000)
@@ -63,7 +63,7 @@ public class UserTo extends BaseTo implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.trim().toLowerCase();
     }
 
     public void setCaloriesPerDay(Integer caloriesPerDay) {

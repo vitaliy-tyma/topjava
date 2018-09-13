@@ -1,9 +1,9 @@
-var ajaxUrl = "ajax/profile/meals/";
-var datatableApi;
+const ajaxUrl = "ajax/profile/meals/";
+let datatableApi;
 
 function updateTable() {
     $.ajax({
-        type: "POST",
+        type: "GET",
         url: ajaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(updateTableByData);
@@ -18,7 +18,7 @@ function clearFilter() {
 $.ajaxSetup({
     converters: {
         "text json": function (stringData) {
-            var json = JSON.parse(stringData);
+            const json = JSON.parse(stringData);
             $(json).each(function () {
                 this.dateTime = this.dateTime.replace('T', ' ').substr(0, 16);
             });
@@ -64,12 +64,11 @@ $(function () {
     $.datetimepicker.setLocale(localeCode);
 
 //  http://xdsoft.net/jqplugins/datetimepicker/
-    var startDate = $('#startDate');
-    var endDate = $('#endDate');
+    const startDate = $('#startDate');
+    const endDate = $('#endDate');
     startDate.datetimepicker({
         timepicker: false,
         format: 'Y-m-d',
-        formatDate: 'Y-m-d',
         onShow: function (ct) {
             this.setOptions({
                 maxDate: endDate.val() ? endDate.val() : false
@@ -79,7 +78,6 @@ $(function () {
     endDate.datetimepicker({
         timepicker: false,
         format: 'Y-m-d',
-        formatDate: 'Y-m-d',
         onShow: function (ct) {
             this.setOptions({
                 minDate: startDate.val() ? startDate.val() : false
@@ -87,9 +85,25 @@ $(function () {
         }
     });
 
-    $('#startTime, #endTime').datetimepicker({
+    const startTime = $('#startTime');
+    const endTime = $('#endTime');
+    startTime.datetimepicker({
         datepicker: false,
-        format: 'H:i'
+        format: 'H:i',
+        onShow: function (ct) {
+            this.setOptions({
+                maxTime: endTime.val() ? endTime.val() : false
+            })
+        }
+    });
+    endTime.datetimepicker({
+        datepicker: false,
+        format: 'H:i',
+        onShow: function (ct) {
+            this.setOptions({
+                minTime: startTime.val() ? startTime.val() : false
+            })
+        }
     });
 
     $('#dateTime').datetimepicker({

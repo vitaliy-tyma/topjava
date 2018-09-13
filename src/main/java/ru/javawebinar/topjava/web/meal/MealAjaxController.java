@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +30,13 @@ public class MealAjaxController extends AbstractMealController {
 
     @Override
     @DeleteMapping(value = "/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") int id) {
         super.delete(id);
     }
 
     @PostMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void createOrUpdate(@Validated(View.Web.class) Meal meal) {
         if (meal.isNew()) {
             super.create(meal);
@@ -43,7 +46,7 @@ public class MealAjaxController extends AbstractMealController {
     }
 
     @Override
-    @PostMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MealWithExceed> getBetween(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "startTime", required = false) LocalTime startTime,

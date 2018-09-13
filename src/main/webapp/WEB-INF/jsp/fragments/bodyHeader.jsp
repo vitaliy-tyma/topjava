@@ -29,7 +29,7 @@
                 </sec:authorize>
                 <sec:authorize access="isAnonymous()">
                     <li class="nav-item">
-                        <form:form class="form-inline my-2" action="spring_security_check" method="post">
+                        <form:form class="form-inline my-2" id="login_form" action="spring_security_check" method="post">
                             <input class="form-control mr-1" type="text" placeholder="Email" name="username">
                             <input class="form-control mr-1" type="password" placeholder="Password" name="password">
                             <button class="btn btn-success" type="submit">
@@ -50,5 +50,5 @@
     </div>
 </nav>
 <script type="text/javascript">
-    var localeCode = "${pageContext.response.locale}";
+    const localeCode = "${pageContext.response.locale}";
 </script>

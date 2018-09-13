@@ -1,12 +1,12 @@
-var ajaxUrl = "ajax/admin/users/";
-var datatableApi;
+const ajaxUrl = "ajax/admin/users/";
+let datatableApi;
 
 function updateTable() {
     $.get(ajaxUrl, updateTableByData);
 }
 
 function enable(chkbox, id) {
-    var enabled = chkbox.is(":checked");
+    const enabled = chkbox.is(":checked");
 //  https://stackoverflow.com/a/22213543/548473
     $.ajax({
         url: ajaxUrl + id,

@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
@@ -27,6 +28,7 @@ public class AdminAjaxController extends AbstractUserController {
 
     @Override
     @DeleteMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") int id) {
         super.delete(id);
     }
@@ -41,7 +43,8 @@ public class AdminAjaxController extends AbstractUserController {
     }
 
     @Override
-    @PostMapping(value = "/{id}")
+    @PostMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void enable(@PathVariable("id") int id, @RequestParam("enabled") boolean enabled) {
         super.enable(id, enabled);
     }

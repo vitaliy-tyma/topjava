@@ -86,12 +86,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void enable(int id, boolean enabled) {
         User user = get(id);
         user.setEnabled(enabled);
-        repository.save(user);
+        repository.save(user);  // !! need only for JDBC implementation
     }
 
     @Override
     public AuthorizedUser loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repository.getByEmail(email.toLowerCase());
+        User user = repository.getByEmail(email.trim().toLowerCase());
         if (user == null) {
             throw new UsernameNotFoundException("User " + email + " is not found");
         }

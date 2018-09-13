@@ -44,19 +44,19 @@ public class RootController extends AbstractUserController {
     }
 
     @GetMapping("/profile")
-    public String profile(ModelMap model, @AuthenticationPrincipal AuthorizedUser authorizedUser) {
-        model.addAttribute("userTo", authorizedUser.getUserTo());
+    public String profile(ModelMap model, @AuthenticationPrincipal AuthorizedUser authUser) {
+        model.addAttribute("userTo", authUser.getUserTo());
         return "profile";
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status, @AuthenticationPrincipal AuthorizedUser authorizedUser) {
+    public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status, @AuthenticationPrincipal AuthorizedUser authUser) {
         if (result.hasErrors()) {
             return "profile";
         }
         try {
-            super.update(userTo, authorizedUser.getId());
-            authorizedUser.update(userTo);
+            super.update(userTo, authUser.getId());
+            authUser.update(userTo);
             status.setComplete();
             return "redirect:meals";
         } catch (DataIntegrityViolationException ex) {
