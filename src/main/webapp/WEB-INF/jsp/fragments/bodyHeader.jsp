@@ -13,8 +13,8 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <sec:authorize access="isAuthenticated()">
-                    <li class="nav-item">
+                <li class="nav-item">
+                    <sec:authorize access="isAuthenticated()">
                         <form:form class="form-inline my-2" action="logout" method="post">
                             <sec:authorize access="hasRole('ROLE_ADMIN')">
                                 <a class="btn btn-info mr-1" href="users"><spring:message code="user.title"/></a>
@@ -25,10 +25,8 @@
                                 <span class="fa fa-sign-out"></span>
                             </button>
                         </form:form>
-                    </li>
-                </sec:authorize>
-                <sec:authorize access="isAnonymous()">
-                    <li class="nav-item">
+                    </sec:authorize>
+                    <sec:authorize access="isAnonymous()">
                         <form:form class="form-inline my-2" id="login_form" action="spring_security_check" method="post">
                             <input class="form-control mr-1" type="text" placeholder="Email" name="username">
                             <input class="form-control mr-1" type="password" placeholder="Password" name="password">
@@ -36,8 +34,8 @@
                                 <span class="fa fa-sign-in"></span>
                             </button>
                         </form:form>
-                    </li>
-                </sec:authorize>
+                    </sec:authorize>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle nav-link my-1 ml-2" data-toggle="dropdown">${pageContext.response.locale}</a>
                     <div class="dropdown-menu">
