@@ -5,11 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.web.json.JacksonObjectMapper.getMapper;
 
@@ -40,28 +37,8 @@ public class JsonUtil {
         }
     }
 
-    public static <T> String writeIgnoreProps(Collection<T> collection, String... ignoreProps) {
-        List<Map<String, Object>> list = collection.stream()
-                .map(e -> getAsMapWithIgnore(e, ignoreProps))
-                .collect(Collectors.toList());
-        return writeValue(list);
-    }
-
-    public static <T> String writeIgnoreProps(T obj, String... ignoreProps) {
-        Map<String, Object> map = getAsMapWithIgnore(obj, ignoreProps);
-        return writeValue(map);
-    }
-
-    private static <T> Map<String, Object> getAsMapWithIgnore(T obj, String[] ignoreProps) {
-        Map<String, Object> map = getMapper().convertValue(obj, new TypeReference<Map<String, Object>>() {});
-        for (String prop : ignoreProps) {
-            map.remove(prop);
-        }
-        return map;
-    }
-
     public static <T> String writeAdditionProps(T obj, String addName, Object addValue) {
-        return writeAdditionProps(obj, Collections.singletonMap(addName, addValue));
+        return writeAdditionProps(obj, Map.of(addName, addValue));
     }
 
     public static <T> String writeAdditionProps(T obj, Map<String, Object> addProps) {

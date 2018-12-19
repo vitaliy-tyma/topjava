@@ -1,17 +1,16 @@
-const ajaxUrl = "ajax/profile/meals/";
-let datatableApi;
+const mealAjaxUrl = "ajax/profile/meals/";
 
-function updateTable() {
+function updateFilteredTable() {
     $.ajax({
         type: "GET",
-        url: ajaxUrl + "filter",
+        url: mealAjaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(updateTableByData);
 }
 
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get(ajaxUrl, updateTableByData);
+    $.get(mealAjaxUrl, updateTableByData);
 }
 
 // http://api.jquery.com/jQuery.ajax/#using-converters
@@ -28,38 +27,42 @@ $.ajaxSetup({
 });
 
 $(function () {
-    datatableApi = $('#datatable').DataTable(extendsOpts({
-        "columns": [
-            {
-                "data": "dateTime"
+    makeEditable({
+        ajaxUrl: mealAjaxUrl,
+        datatableOpts: {
+            "columns": [
+                {
+                    "data": "dateTime"
+                },
+                {
+                    "data": "description"
+                },
+                {
+                    "data": "calories"
+                },
+                {
+                    "render": renderEditBtn,
+                    "defaultContent": "",
+                    "orderable": false
+                },
+                {
+                    "render": renderDeleteBtn,
+                    "defaultContent": "",
+                    "orderable": false
+                }
+            ],
+            "order": [
+                [
+                    0,
+                    "desc"
+                ]
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr("data-mealExcess", data.excess);
             },
-            {
-                "data": "description"
-            },
-            {
-                "data": "calories"
-            },
-            {
-                "render": renderEditBtn,
-                "defaultContent": "",
-                "orderable": false
-            },
-            {
-                "render": renderDeleteBtn,
-                "defaultContent": "",
-                "orderable": false
-            }
-        ],
-        "order": [
-            [
-                0,
-                "desc"
-            ]
-        ],
-        "createdRow": function (row, data, dataIndex) {
-            $(row).attr("data-mealExceed", data.exceed);
-        }
-    }));
+        },
+        updateTable: updateFilteredTable
+    });
 
     $.datetimepicker.setLocale(localeCode);
 
@@ -69,6 +72,7 @@ $(function () {
     startDate.datetimepicker({
         timepicker: false,
         format: 'Y-m-d',
+        formatDate: 'Y-m-d',
         onShow: function (ct) {
             this.setOptions({
                 maxDate: endDate.val() ? endDate.val() : false
@@ -78,6 +82,7 @@ $(function () {
     endDate.datetimepicker({
         timepicker: false,
         format: 'Y-m-d',
+        formatDate: 'Y-m-d',
         onShow: function (ct) {
             this.setOptions({
                 minDate: startDate.val() ? startDate.val() : false

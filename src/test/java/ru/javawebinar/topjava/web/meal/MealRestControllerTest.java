@@ -9,24 +9,23 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.MealTestData.assertMatch;
-import static ru.javawebinar.topjava.TestUtil.contentJson;
+import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
+import static ru.javawebinar.topjava.util.MealsUtil.createWithExcess;
+import static ru.javawebinar.topjava.util.MealsUtil.getWithExcess;
+import static ru.javawebinar.topjava.util.exception.ErrorType.VALIDATION_ERROR;
 import static ru.javawebinar.topjava.web.ExceptionInfoHandler.EXCEPTION_DUPLICATE_DATETIME;
 
 class MealRestControllerTest extends AbstractControllerTest {
@@ -43,7 +42,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(ADMIN_MEAL1));
+                .andExpect(result -> assertMatch(readFromJsonMvcResult(result, Meal.class), ADMIN_MEAL1));
     }
 
     @Test
@@ -96,7 +95,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(created))
                 .with(userHttpBasic(ADMIN)));
 
-        Meal returned = readFromJson(action, Meal.class);
+        Meal returned = readFromJsonResultActions(action, Meal.class);
         created.setId(returned.getId());
 
         assertMatch(returned, created);
@@ -110,7 +109,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(contentJson(MealsUtil.getWithExceeded(MEALS, USER.getCaloriesPerDay())));
+                .andExpect(getToMatcher(getWithExcess(MEALS, USER.getCaloriesPerDay())));
     }
 
     @Test
@@ -121,9 +120,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(contentJsonArray(
-                        MealsUtil.createWithExceed(MEAL4, true),
-                        MealsUtil.createWithExceed(MEAL1, false)));
+                .andExpect(getToMatcher(createWithExcess(MEAL4, true), createWithExcess(MEAL1, false)));
     }
 
     @Test
@@ -131,8 +128,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(get(REST_URL + "filter?startDate=&endTime=")
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(contentJson(MealsUtil.getWithExceeded(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1), USER.getCaloriesPerDay())));
+                .andExpect(getToMatcher(getWithExcess(MEALS, USER.getCaloriesPerDay())));
     }
 
     @Test
@@ -144,7 +140,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andDo(print());
     }
 
@@ -157,10 +153,9 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andDo(print());
     }
-
 
     @Test
     void testUpdateHtmlUnsafe() throws Exception {
@@ -171,7 +166,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andDo(print());
     }
 
@@ -186,8 +181,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
-                .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_DATETIME));
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessage(EXCEPTION_DUPLICATE_DATETIME));
     }
 
     @Test
@@ -200,7 +195,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
-                .andExpect(jsonMessage("$.details", EXCEPTION_DUPLICATE_DATETIME));
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessage(EXCEPTION_DUPLICATE_DATETIME));
     }
 }

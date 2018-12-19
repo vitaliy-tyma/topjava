@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.View;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.to.MealWithExceed;
+import ru.javawebinar.topjava.to.MealTo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,11 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/ajax/profile/meals")
-public class MealAjaxController extends AbstractMealController {
+public class MealUiController extends AbstractMealController {
 
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MealWithExceed> getAll() {
+    public List<MealTo> getAll() {
         return super.getAll();
     }
 
@@ -47,7 +47,7 @@ public class MealAjaxController extends AbstractMealController {
 
     @Override
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MealWithExceed> getBetween(
+    public List<MealTo> getBetween(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "startTime", required = false) LocalTime startTime,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,

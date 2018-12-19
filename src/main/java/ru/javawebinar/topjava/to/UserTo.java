@@ -63,7 +63,7 @@ public class UserTo extends BaseTo implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email.trim().toLowerCase();
+        this.email = email;
     }
 
     public void setCaloriesPerDay(Integer caloriesPerDay) {

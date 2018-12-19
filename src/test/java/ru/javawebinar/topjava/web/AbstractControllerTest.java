@@ -73,7 +73,7 @@ abstract public class AbstractControllerTest {
         }
     }
 
-    protected String getMessage(String code) {
+    private String getMessage(String code) {
         return messageUtil.getMessage(code, MessageUtil.RU_LOCALE);
     }
 
@@ -81,7 +81,7 @@ abstract public class AbstractControllerTest {
         return jsonPath("$.type").value(type.name());
     }
 
-    public ResultMatcher jsonMessage(String path, String code) {
-        return jsonPath(path).value(getMessage(code));
+    public ResultMatcher detailMessage(String code) {
+        return jsonPath("$.details").value(getMessage(code));
     }
 }

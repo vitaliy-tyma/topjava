@@ -3,22 +3,25 @@ package ru.javawebinar.topjava.to;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class MealWithExceed extends BaseTo {
+public class MealTo extends BaseTo {
 
-    private final LocalDateTime dateTime;
+    private LocalDateTime dateTime;
 
-    private final String description;
+    private String description;
 
-    private final int calories;
+    private int calories;
 
-    private final boolean exceed;
+    private boolean excess;
 
-    public MealWithExceed(Integer id, LocalDateTime dateTime, String description, int calories, boolean exceed) {
+    public MealTo() {
+    }
+
+    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
         super(id);
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-        this.exceed = exceed;
+        this.excess = excess;
     }
 
     public LocalDateTime getDateTime() {
@@ -33,17 +36,17 @@ public class MealWithExceed extends BaseTo {
         return calories;
     }
 
-    public boolean isExceed() {
-        return exceed;
+    public boolean isExcess() {
+        return excess;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealWithExceed that = (MealWithExceed) o;
+        MealTo that = (MealTo) o;
         return calories == that.calories &&
-                exceed == that.exceed &&
+                excess == that.excess &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(dateTime, that.dateTime) &&
                 Objects.equals(description, that.description);
@@ -51,17 +54,17 @@ public class MealWithExceed extends BaseTo {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dateTime, description, calories, exceed);
+        return Objects.hash(id, dateTime, description, calories, excess);
     }
 
     @Override
     public String toString() {
-        return "MealWithExceed{" +
+        return "MealTo{" +
                 "id=" + id +
                 ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
-                ", exceed=" + exceed +
+                ", excess=" + excess +
                 '}';
     }
 }

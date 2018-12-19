@@ -36,12 +36,8 @@ public class GlobalControllerExceptionHandler {
     }
 
     private ModelAndView logAndGetExceptionView(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String msg) {
-        Throwable rootCause = ValidationUtil.getRootCause(e);
-        if (logException) {
-            log.error(errorType + " at request " + req.getRequestURL(), rootCause);
-        } else {
-            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
-        }
+        Throwable rootCause = ValidationUtil.logAndGetRootCause(log, req, e, logException, errorType);
+
         ModelAndView mav = new ModelAndView("exception/exception");
         mav.addObject("typeMessage", messageUtil.getMessage(errorType.getErrorCode()));
         mav.addObject("exception", rootCause);

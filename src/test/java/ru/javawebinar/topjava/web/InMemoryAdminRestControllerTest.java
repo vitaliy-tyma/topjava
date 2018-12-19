@@ -8,7 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.mock.InMemoryUserRepositoryImpl;
+import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
@@ -25,7 +25,7 @@ class InMemoryAdminRestControllerTest {
 
     @BeforeAll
     static void beforeClass() {
-        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/mock.xml");
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/inmemory.xml");
         System.out.println("\n" + Arrays.toString(appCtx.getBeanDefinitionNames()) + "\n");
         controller = appCtx.getBean(AdminRestController.class);
     }

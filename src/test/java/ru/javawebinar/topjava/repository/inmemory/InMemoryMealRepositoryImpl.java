@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.repository.mock;
+package ru.javawebinar.topjava.repository.inmemory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +27,8 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        Objects.requireNonNull(meal);
-        Map<Integer, Meal> meals = repository.computeIfAbsent(userId, ConcurrentHashMap::new);
+        Objects.requireNonNull(meal, "meal must not be null");
+        var meals = repository.computeIfAbsent(userId, ConcurrentHashMap::new);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             meals.put(meal.getId(), meal);
@@ -49,13 +49,13 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        Map<Integer, Meal> meals = repository.get(userId);
+        var meals = repository.get(userId);
         return meals != null && meals.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        Map<Integer, Meal> meals = repository.get(userId);
+        var meals = repository.get(userId);
         return meals == null ? null : meals.get(id);
     }
 
@@ -66,13 +66,13 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public List<Meal> getBetween(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        Objects.requireNonNull(startDateTime);
-        Objects.requireNonNull(endDateTime);
+        Objects.requireNonNull(startDateTime, "startDateTime must not be null");
+        Objects.requireNonNull(endDateTime, "endDateTime must not be null");
         return getAllFiltered(userId, meal -> Util.isBetween(meal.getDateTime(), startDateTime, endDateTime));
     }
 
     private List<Meal> getAllFiltered(int userId, Predicate<Meal> filter) {
-        Map<Integer, Meal> meals = repository.get(userId);
+        var meals = repository.get(userId);
         return CollectionUtils.isEmpty(meals) ? Collections.emptyList() :
                 meals.values().stream()
                         .filter(filter)

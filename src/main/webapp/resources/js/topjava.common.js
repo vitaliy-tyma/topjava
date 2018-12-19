@@ -1,6 +1,21 @@
-const form = $('#detailsForm');
+let context, form;
 
-function makeEditable() {
+function makeEditable(ctx) {
+    context = ctx;
+    context.datatableApi = $("#datatable").DataTable(
+        // https://api.jquery.com/jquery.extend/#jQuery-extend-deep-target-object1-objectN
+        $.extend(true, ctx.datatableOpts,
+            {
+                "ajax": {
+                    "url": context.ajaxUrl,
+                    "dataSrc": ""
+                },
+                "paging": false,
+                "info": true,
+            }
+        ));
+
+    form = $('#detailsForm');
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
@@ -15,25 +30,6 @@ function makeEditable() {
     });
 }
 
-// https://api.jquery.com/jquery.extend/#jQuery-extend-deep-target-object1-objectN
-function extendsOpts(opts) {
-    $.extend(true, opts,
-        {
-            "ajax": {
-                "url": ajaxUrl,
-                "dataSrc": ""
-            },
-            "paging": false,
-            "info": true,
-            "language": {
-                "search": i18n["common.search"]
-            },
-            "initComplete": makeEditable
-        }
-    );
-    return opts;
-}
-
 function add() {
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
@@ -42,7 +38,7 @@ function add() {
 
 function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
-    $.get(ajaxUrl + id, function (data) {
+    $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
             form.find("input[name='" + key + "']").val(value);
         });
@@ -52,26 +48,26 @@ function updateRow(id) {
 
 function deleteRow(id) {
     $.ajax({
-        url: ajaxUrl + id,
+        url: context.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        context.updateTable();
         successNoty("common.deleted");
     });
 }
 
 function updateTableByData(data) {
-    datatableApi.clear().rows.add(data).draw();
+    context.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
     $.ajax({
         type: "POST",
-        url: ajaxUrl,
+        url: context.ajaxUrl,
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        context.updateTable();
         successNoty("common.saved");
     });
 }
@@ -100,7 +96,7 @@ function failNoty(jqXHR) {
     // https://stackoverflow.com/questions/48229776
     const errorInfo = JSON.parse(jqXHR.responseText);
     failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] + ": " + jqXHR.status + "<br>" + errorInfo.type + "<br>" + errorInfo.details.join("<br>"),
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorInfo.typeMessage + "<br>" + errorInfo.details.join("<br>"),
         type: "error",
         layout: "bottomRight"
     }).show();

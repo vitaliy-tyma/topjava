@@ -13,7 +13,7 @@
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
         <%--https://getbootstrap.com/docs/4.0/components/card/--%>
-        <div class="card">
+        <div class="card border-dark">
             <div class="card-body pb-0">
                 <form id="filter">
                     <div class="row">
@@ -41,7 +41,7 @@
                     <span class="fa fa-remove"></span>
                     <spring:message code="common.cancel"/>
                 </button>
-                <button class="btn btn-primary" onclick="updateTable()">
+                <button class="btn btn-primary" onclick="updateFilteredTable()">
                     <span class="fa fa-filter"></span>
                     <spring:message code="meal.filter"/>
                 </button>
