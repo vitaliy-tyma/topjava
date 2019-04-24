@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.model.User;
@@ -22,11 +24,19 @@ public abstract class AbstractUserController {
     @Autowired
     private UserService service;
 
+    @Autowired
+    private UniqueMailValidator emailValidator;
+
     private boolean modificationRestriction;
 
     @Autowired
     public void setEnvironment(Environment environment) {
         modificationRestriction = environment.acceptsProfiles(Profiles.HEROKU);
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(emailValidator);
     }
 
     public List<User> getAll() {

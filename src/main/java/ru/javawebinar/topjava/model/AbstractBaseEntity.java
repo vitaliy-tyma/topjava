@@ -43,7 +43,6 @@ public abstract class AbstractBaseEntity implements HasId {
         return String.format("Entity %s (%s)", getClass().getName(), id);
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

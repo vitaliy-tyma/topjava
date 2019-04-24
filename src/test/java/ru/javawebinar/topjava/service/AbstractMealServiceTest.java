@@ -37,9 +37,11 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
 
     @Test
     void create() throws Exception {
-        Meal created = getCreated();
-        service.create(created, USER_ID);
-        assertMatch(service.getAll(USER_ID), created, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+        Meal newMeal = getCreated();
+        Meal created = service.create(newMeal, USER_ID);
+        newMeal.setId(created.getId());
+        assertMatch(newMeal, created);
+        assertMatch(service.getAll(USER_ID), newMeal, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
     }
 
     @Test
@@ -84,7 +86,7 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
 
     @Test
     void testValidation() throws Exception {
-        Assumptions.assumeTrue(isJpaBased(), "Validation not supported (only for JPA)");
+        Assumptions.assumeTrue(isJpaBased(), "Validation not supported (JPA only)");
         validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "  ", 300), USER_ID), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new Meal(null, null, "Description", 300), USER_ID), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 9), USER_ID), ConstraintViolationException.class);

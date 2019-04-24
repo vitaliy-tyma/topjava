@@ -7,6 +7,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.util.CollectionUtils;
+import ru.javawebinar.topjava.HasEmail;
 import ru.javawebinar.topjava.View;
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ import static ru.javawebinar.topjava.util.UserUtil.DEFAULT_CALORIES_PER_DAY;
 })
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
-public class User extends AbstractNamedEntity {
+public class User extends AbstractNamedEntity implements HasEmail {
 
     public static final String DELETE = "User.delete";
     public static final String BY_EMAIL = "User.getByEmail";
@@ -49,7 +50,7 @@ public class User extends AbstractNamedEntity {
     @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
     private boolean enabled = true;
 
-    @Column(name = "registered", columnDefinition = "timestamp default now()")
+    @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()")
     @NotNull
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date registered = new Date();
@@ -93,6 +94,7 @@ public class User extends AbstractNamedEntity {
         setRoles(roles);
     }
 
+    @Override
     public String getEmail() {
         return email;
     }

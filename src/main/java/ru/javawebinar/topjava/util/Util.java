@@ -1,15 +1,12 @@
 package ru.javawebinar.topjava.util;
 
-public class Util {
+import org.springframework.lang.Nullable;
 
+public class Util {
     private Util() {
     }
 
-    public static <T extends Comparable<? super T>> boolean isBetween(T value, T start, T end) {
-        return value.compareTo(start) >= 0 && value.compareTo(end) <= 0;
-    }
-
-    public static <T> T orElse(T value, T defaultValue) {
-        return value == null ? defaultValue : value;
+    public static <T extends Comparable<? super T>> boolean isBetween(T value, @Nullable T start, @Nullable T end) {
+        return (start == null || value.compareTo(start) >= 0) && (end == null || value.compareTo(end) <= 0);
     }
 }

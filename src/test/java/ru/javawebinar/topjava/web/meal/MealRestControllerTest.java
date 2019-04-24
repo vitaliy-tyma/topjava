@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.assertMatch;
+import static ru.javawebinar.topjava.MealTestData.contentJson;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.*;
 import static ru.javawebinar.topjava.UserTestData.*;
@@ -95,7 +96,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(created))
                 .with(userHttpBasic(ADMIN)));
 
-        Meal returned = readFromJsonResultActions(action, Meal.class);
+        Meal returned = readFromJson(action, Meal.class);
         created.setId(returned.getId());
 
         assertMatch(returned, created);
@@ -109,7 +110,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(getToMatcher(getWithExcess(MEALS, USER.getCaloriesPerDay())));
+                .andExpect(contentJson(getWithExcess(MEALS, USER.getCaloriesPerDay())));
     }
 
     @Test
@@ -120,7 +121,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(getToMatcher(createWithExcess(MEAL4, true), createWithExcess(MEAL1, false)));
+                .andExpect(contentJson(createWithExcess(MEAL4, true), createWithExcess(MEAL1, false)));
     }
 
     @Test
@@ -128,7 +129,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(get(REST_URL + "filter?startDate=&endTime=")
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
-                .andExpect(getToMatcher(getWithExcess(MEALS, USER.getCaloriesPerDay())));
+                .andExpect(contentJson(getWithExcess(MEALS, USER.getCaloriesPerDay())));
     }
 
     @Test
@@ -147,19 +148,6 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void testUpdateInvalid() throws Exception {
         Meal invalid = new Meal(MEAL1_ID, null, null, 6000);
-        mockMvc.perform(put(REST_URL + MEAL1_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(invalid))
-                .with(userHttpBasic(USER)))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(VALIDATION_ERROR))
-                .andDo(print());
-    }
-
-    @Test
-    void testUpdateHtmlUnsafe() throws Exception {
-        Meal invalid = new Meal(MEAL1_ID, LocalDateTime.now(), "<script>alert(123)</script>", 200);
         mockMvc.perform(put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid))
@@ -197,5 +185,18 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessage(EXCEPTION_DUPLICATE_DATETIME));
+    }
+
+    @Test
+    void testUpdateHtmlUnsafe() throws Exception {
+        Meal invalid = new Meal(MEAL1_ID, LocalDateTime.now(), "<script>alert(123)</script>", 200);
+        mockMvc.perform(put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(invalid))
+                .with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andDo(print());
     }
 }

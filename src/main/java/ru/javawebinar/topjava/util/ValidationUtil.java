@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ValidationUtil {
 
-    public static <T> T checkNotFoundWithId(T object, int id) {
-        return checkNotFound(object, "id=" + id);
+    private ValidationUtil() {
     }
 
-    private ValidationUtil() {
+    public static <T> T checkNotFoundWithId(T object, int id) {
+        return checkNotFound(object, "id=" + id);
     }
 
     public static void checkNotFoundWithId(boolean found, int id) {
@@ -39,7 +39,7 @@ public class ValidationUtil {
     }
 
     public static void assureIdConsistent(HasId bean, int id) {
-//      http://stackoverflow.com/a/32728226/548473
+//      conservative when you reply, but accept liberally (http://stackoverflow.com/a/32728226/548473)
         if (bean.isNew()) {
             bean.setId(id);
         } else if (bean.getId() != id) {

@@ -5,10 +5,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -18,9 +16,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.topjava.TestUtil.readFromJsonResultActions;
+import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.util.exception.ErrorType.VALIDATION_ERROR;
 import static ru.javawebinar.topjava.web.ExceptionInfoHandler.EXCEPTION_DUPLICATE_EMAIL;
 
 class AdminRestControllerTest extends AbstractControllerTest {
@@ -35,7 +34,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(getUserMatcher(ADMIN));
+                .andExpect(contentJson(ADMIN));
     }
 
     @Test
@@ -52,7 +51,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(getUserMatcher(ADMIN));
+                .andExpect(contentJson(ADMIN));
     }
 
     @Test
@@ -108,7 +107,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .content(jsonWithPassword(expected, "newPass")))
                 .andExpect(status().isCreated());
 
-        User returned = readFromJsonResultActions(action, User.class);
+        User returned = readFromJson(action, User.class);
         expected.setId(returned.getId());
 
         assertMatch(returned, expected);
@@ -117,11 +116,11 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        TestUtil.print(mockMvc.perform(get(REST_URL)
+        mockMvc.perform(get(REST_URL)
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(getUserMatcher(ADMIN, USER)));
+                .andExpect(contentJson(ADMIN, USER));
     }
 
     @Test
@@ -132,7 +131,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN))
                 .content(JsonUtil.writeValue(expected)))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andDo(print());
     }
 
@@ -146,7 +145,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isUnprocessableEntity())
                 .andDo(print())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andDo(print());
     }
 
@@ -159,8 +158,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
                 .content(jsonWithPassword(updated, "password")))
-                .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessage(EXCEPTION_DUPLICATE_EMAIL))
                 .andDo(print());
     }
@@ -173,8 +172,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
                 .content(jsonWithPassword(expected, "newPass")))
-                .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessage(EXCEPTION_DUPLICATE_EMAIL));
 
     }

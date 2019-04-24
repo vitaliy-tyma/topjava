@@ -1,5 +1,4 @@
 package ru.javawebinar.topjava.util.exception;
-
 import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends ApplicationException {

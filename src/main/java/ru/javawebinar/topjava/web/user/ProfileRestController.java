@@ -25,7 +25,7 @@ public class ProfileRestController extends AbstractUserController {
     }
 
     @DeleteMapping
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal AuthorizedUser authUser) {
         super.delete(authUser.getId());
     }
@@ -42,7 +42,7 @@ public class ProfileRestController extends AbstractUserController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody UserTo userTo, @AuthenticationPrincipal AuthorizedUser authUser) {
         super.update(userTo, authUser.getId());
     }

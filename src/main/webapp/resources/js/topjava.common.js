@@ -50,13 +50,15 @@ function updateRow(id) {
 }
 
 function deleteRow(id) {
-    $.ajax({
-        url: context.ajaxUrl + id,
-        type: "DELETE"
-    }).done(function () {
-        context.updateTable();
-        successNoty("common.deleted");
-    });
+    if (confirm(i18n['common.confirm'])) {
+        $.ajax({
+            url: context.ajaxUrl + id,
+            type: "DELETE"
+        }).done(function () {
+            context.updateTable();
+            successNoty("common.deleted");
+        });
+    }
 }
 
 function updateTableByData(data) {
@@ -96,7 +98,6 @@ function successNoty(key) {
 
 function failNoty(jqXHR) {
     closeNoty();
-    // https://stackoverflow.com/questions/48229776
     const errorInfo = JSON.parse(jqXHR.responseText);
     failedNote = new Noty({
         text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorInfo.typeMessage + "<br>" + errorInfo.details.join("<br>"),

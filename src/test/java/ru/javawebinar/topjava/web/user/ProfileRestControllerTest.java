@@ -5,11 +5,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
-import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -17,8 +15,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.topjava.TestUtil.*;
+import static ru.javawebinar.topjava.TestUtil.readFromJson;
+import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.util.exception.ErrorType.VALIDATION_ERROR;
 import static ru.javawebinar.topjava.web.ExceptionInfoHandler.EXCEPTION_DUPLICATE_EMAIL;
 import static ru.javawebinar.topjava.web.user.ProfileRestController.REST_URL;
 
@@ -26,13 +26,11 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testGet() throws Exception {
-        TestUtil.print(
-                mockMvc.perform(get(REST_URL)
-                        .with(userHttpBasic(USER)))
-                        .andExpect(status().isOk())
-                        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                        .andExpect(getUserMatcher(USER))
-        );
+        mockMvc.perform(get(REST_URL)
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(contentJson(USER));
     }
 
     @Test
@@ -57,7 +55,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(createdTo)))
                 .andDo(print())
                 .andExpect(status().isCreated());
-        User returned = readFromJsonResultActions(action, User.class);
+        User returned = readFromJson(action, User.class);
 
         User created = UserUtil.createNewFromTo(createdTo);
         created.setId(returned.getId());
@@ -88,7 +86,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andDo(print());
     }
 
@@ -100,8 +98,8 @@ class ProfileRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(USER))
                 .content(JsonUtil.writeValue(updatedTo)))
-                .andExpect(status().isConflict())
-                .andExpect(errorType(ErrorType.VALIDATION_ERROR))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessage(EXCEPTION_DUPLICATE_EMAIL))
                 .andDo(print());
     }
