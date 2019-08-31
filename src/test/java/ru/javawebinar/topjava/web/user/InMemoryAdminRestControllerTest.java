@@ -8,9 +8,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
+import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +39,7 @@ class InMemoryAdminRestControllerTest {
     @BeforeEach
     void setUp() throws Exception {
         // re-initialize
-        InMemoryUserRepositoryImpl repository = appCtx.getBean(InMemoryUserRepositoryImpl.class);
+        InMemoryUserRepository repository = appCtx.getBean(InMemoryUserRepository.class);
         repository.init();
     }
 
@@ -48,8 +47,8 @@ class InMemoryAdminRestControllerTest {
     void delete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();
-        assertEquals(users.size(), 1);
-        assertEquals(users.iterator().next(), ADMIN);
+        assertEquals(1, users.size());
+        assertEquals(ADMIN, users.iterator().next());
     }
 
     @Test

@@ -11,6 +11,7 @@ import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
+import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.util.exception.ModificationRestrictionException;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public abstract class AbstractUserController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UserService service;
+    protected UserService service;
 
     @Autowired
     private UniqueMailValidator emailValidator;
@@ -30,6 +31,7 @@ public abstract class AbstractUserController {
     private boolean modificationRestriction;
 
     @Autowired
+    @SuppressWarnings("deprecation")
     public void setEnvironment(Environment environment) {
         modificationRestriction = environment.acceptsProfiles(Profiles.HEROKU);
     }
@@ -47,6 +49,10 @@ public abstract class AbstractUserController {
     public User get(int id) {
         log.info("get {}", id);
         return service.get(id);
+    }
+
+    public User create(UserTo userTo) {
+        return create(UserUtil.createNewFromTo(userTo));
     }
 
     public User create(User user) {
@@ -73,11 +79,6 @@ public abstract class AbstractUserController {
         assureIdConsistent(userTo, id);
         checkModificationAllowed(id);
         service.update(userTo);
-    }
-
-    public User getByMail(String email) {
-        log.info("getByEmail {}", email);
-        return service.getByEmail(email);
     }
 
     public void enable(int id, boolean enabled) {

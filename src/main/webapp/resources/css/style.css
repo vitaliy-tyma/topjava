@@ -34,7 +34,7 @@ tr[data-userEnabled="false"] {
 
 /*https://stackoverflow.com/a/53855189/548473*/
 #noty_layout__bottomRight {
-    width: 375px !important;
+    width: 385px !important;
 }
 
 /*https://getbootstrap.com/docs/4.0/examples/sticky-footer/sticky-footer.css*/

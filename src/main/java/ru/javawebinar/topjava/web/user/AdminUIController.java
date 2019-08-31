@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.UserUtil;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -36,9 +35,9 @@ public class AdminUIController extends AbstractUserController {
     @PostMapping
     public void createOrUpdate(@Valid UserTo userTo) {
         if (userTo.isNew()) {
-            super.create(UserUtil.createNewFromTo(userTo));
+            super.create(userTo);
         } else {
-            super.update(userTo, userTo.getId());
+            super.update(userTo, userTo.id());
         }
     }
 

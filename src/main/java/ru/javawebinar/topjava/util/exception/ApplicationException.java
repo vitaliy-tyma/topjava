@@ -38,5 +38,4 @@ public class ApplicationException extends RuntimeException {
     public String[] getArgs() {
         return args;
     }
-
 }

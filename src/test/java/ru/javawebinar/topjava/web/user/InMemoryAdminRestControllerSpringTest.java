@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
+import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.util.Collection;
 
@@ -23,7 +22,7 @@ class InMemoryAdminRestControllerSpringTest {
     private AdminRestController controller;
 
     @Autowired
-    private InMemoryUserRepositoryImpl repository;
+    private InMemoryUserRepository repository;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -31,15 +30,15 @@ class InMemoryAdminRestControllerSpringTest {
     }
 
     @Test
-    void testDelete() throws Exception {
+    void delete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();
-        assertEquals(users.size(), 1);
-        assertEquals(users.iterator().next(), ADMIN);
+        assertEquals(1, users.size());
+        assertEquals(ADMIN, users.iterator().next());
     }
 
     @Test
-    void testDeleteNotFound() throws Exception {
+    void deleteNotFound() throws Exception {
         assertThrows(NotFoundException.class, () ->
                 controller.delete(10));
     }

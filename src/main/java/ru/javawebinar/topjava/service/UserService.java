@@ -1,29 +1,99 @@
 package ru.javawebinar.topjava.service;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.util.UserUtil;
 
 import java.util.List;
 
-public interface UserService {
+import static ru.javawebinar.topjava.util.UserUtil.prepareToSave;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
-    User create(User user);
+@Service("userService")
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class UserService implements UserDetailsService {
 
-    void delete(int id) throws NotFoundException;
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    User get(int id) throws NotFoundException;
+    @Autowired
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    User getByEmail(String email) throws NotFoundException;
 
-    void update(User user);
+    @CacheEvict(value = "users", allEntries = true)
+    public User create(User user) {
+        Assert.notNull(user, "user must not be null");
+        return repository.save(prepareToSave(user, passwordEncoder));
+    }
 
-    void update(UserTo user);
+    @CacheEvict(value = "users", allEntries = true)
+    public void delete(int id) {
+        checkNotFoundWithId(repository.delete(id), id);
+    }
 
-    List<User> getAll();
+    public User get(int id) {
+        return checkNotFoundWithId(repository.get(id), id);
+    }
 
-    void enable(int id, boolean enable);
+    public User getByEmail(String email) {
+        Assert.notNull(email, "email must not be null");
+        return checkNotFound(repository.getByEmail(email), "email=" + email);
+    }
 
-    User getWithMeals(int id);
+    @Cacheable("users")
+    public List<User> getAll() {
+        return repository.getAll();
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    public void update(User user) {
+        Assert.notNull(user, "user must not be null");
+//      checkNotFoundWithId : check works only for JDBC, disabled
+        repository.save(prepareToSave(user, passwordEncoder));
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Transactional
+    public void update(UserTo userTo) {
+        User user = get(userTo.id());
+        repository.save(prepareToSave(UserUtil.updateFromTo(user, userTo), passwordEncoder));
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Transactional
+    public void enable(int id, boolean enabled) {
+        User user = get(id);
+        user.setEnabled(enabled);
+        repository.save(user);  // !! need only for JDBC implementation
+    }
+
+    @Override
+    public AuthorizedUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = repository.getByEmail(email.toLowerCase());
+        if (user == null) {
+            throw new UsernameNotFoundException("User " + email + " is not found");
+        }
+        return new AuthorizedUser(user);
+    }
+
+    public User getWithMeals(int id) {
+        return checkNotFoundWithId(repository.getWithMeals(id), id);
+    }
 }

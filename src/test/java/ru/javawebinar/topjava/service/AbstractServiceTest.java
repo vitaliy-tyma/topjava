@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,11 +26,6 @@ abstract class AbstractServiceTest {
 
     @Autowired
     private Environment env;
-
-    static {
-        // needed only for java.util.logging (postgres driver)
-        SLF4JBridgeHandler.install();
-    }
 
     boolean isJpaBased() {
 //        return Arrays.stream(env.getActiveProfiles()).noneMatch(Profiles.JDBC::equals);

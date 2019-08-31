@@ -13,12 +13,13 @@ import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
 import java.util.*;
 
 @Repository
 @Transactional(readOnly = true)
-public class JdbcUserRepositoryImpl implements UserRepository {
+public class JdbcUserRepository implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
@@ -29,7 +30,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     private final SimpleJdbcInsert insertUser;
 
     @Autowired
-    public JdbcUserRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
@@ -41,6 +42,8 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     @Override
     @Transactional
     public User save(User user) {
+        ValidationUtil.validate(user);
+
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
         if (user.isNew()) {
@@ -110,8 +113,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     private User setRoles(User u) {
         if (u != null) {
-            List<Role> roles = jdbcTemplate.query("SELECT role FROM user_roles  WHERE user_id=?",
-                    (rs, rowNum) -> Role.valueOf(rs.getString("role")), u.getId());
+            List<Role> roles = jdbcTemplate.queryForList("SELECT role FROM user_roles  WHERE user_id=?", Role.class, u.getId());
             u.setRoles(roles);
         }
         return u;

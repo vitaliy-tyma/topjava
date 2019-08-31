@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.topjava.model.Meal;
@@ -32,7 +31,13 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
     @Test
     void deleteNotFound() throws Exception {
         assertThrows(NotFoundException.class, () ->
-                service.delete(MEAL1_ID, 1));
+                service.delete(1, USER_ID));
+    }
+
+    @Test
+    void deleteNotOwn() throws Exception {
+        assertThrows(NotFoundException.class, () ->
+                service.delete(MEAL1_ID, ADMIN_ID));
     }
 
     @Test
@@ -52,6 +57,12 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
 
     @Test
     void getNotFound() throws Exception {
+        assertThrows(NotFoundException.class, () ->
+                service.get(1, ADMIN_ID));
+    }
+
+    @Test
+    void getNotOwn() throws Exception {
         assertThrows(NotFoundException.class, () ->
                 service.get(MEAL1_ID, ADMIN_ID));
     }
@@ -85,8 +96,7 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    void testValidation() throws Exception {
-        Assumptions.assumeTrue(isJpaBased(), "Validation not supported (JPA only)");
+    void createWithException() throws Exception {
         validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "  ", 300), USER_ID), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new Meal(null, null, "Description", 300), USER_ID), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 9), USER_ID), ConstraintViolationException.class);

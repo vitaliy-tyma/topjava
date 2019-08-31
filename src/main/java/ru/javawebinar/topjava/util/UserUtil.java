@@ -10,8 +10,8 @@ public class UserUtil {
 
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
 
-    public static User createNewFromTo(UserTo newUser) {
-        return new User(null, newUser.getName(), newUser.getEmail().toLowerCase(), newUser.getPassword(), newUser.getCaloriesPerDay(), Role.ROLE_USER);
+    public static User createNewFromTo(UserTo userTo) {
+        return new User(null, userTo.getName(), userTo.getEmail().toLowerCase(), userTo.getPassword(), userTo.getCaloriesPerDay(), Role.ROLE_USER);
     }
 
     public static UserTo asTo(User user) {
@@ -28,7 +28,7 @@ public class UserUtil {
 
     public static User prepareToSave(User user, PasswordEncoder passwordEncoder) {
         String password = user.getPassword();
-        user.setPassword(StringUtils.isEmpty(password) ? password : passwordEncoder.encode(password));
+        user.setPassword(StringUtils.hasText(password) ? passwordEncoder.encode(password) : password);
         user.setEmail(user.getEmail().toLowerCase());
         return user;
     }

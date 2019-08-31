@@ -12,7 +12,7 @@ import static ru.javawebinar.topjava.UserTestData.USER;
 class RootControllerTest extends AbstractControllerTest {
 
     @Test
-    void testUsers() throws Exception {
+    void getUsers() throws Exception {
         mockMvc.perform(get("/users")
                 .with(userAuth(ADMIN)))
                 .andDo(print())
@@ -22,7 +22,7 @@ class RootControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testUnAuth() throws Exception {
+    void unAuth() throws Exception {
         mockMvc.perform(get("/users"))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
@@ -30,7 +30,7 @@ class RootControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void testMeals() throws Exception {
+    void getMeals() throws Exception {
         mockMvc.perform(get("/meals")
                 .with(userAuth(USER)))
                 .andDo(print())

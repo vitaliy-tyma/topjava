@@ -64,7 +64,7 @@ public class User extends AbstractNamedEntity implements HasEmail {
     @BatchSize(size = 200)
     private Set<Role> roles;
 
-    @Column(name = "calories_per_day", columnDefinition = "int default 2000")
+    @Column(name = "calories_per_day", nullable = false, columnDefinition = "int default 2000")
     @Range(min = 10, max = 10000)
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
